@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 3</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            margin: 0;
+            padding: 20px;
+            color: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #ffd700, 0 0 20px #ffd700; }
+            to { text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        #timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.5em;
+            color: #00eaff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+
+        .question-nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .question-box {
+            width: 40px;
+            height: 40px;
+            margin: 8px;
+            background: linear-gradient(45deg, #333, #555);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .question-box:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question-box.answered {
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            box-shadow: 0 0 15px #ffd700;
+        }
+
+        .question {
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question h3 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.6em;
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            line-height: 1.4;
+        }
+
+        .option {
+            margin: 10px 0;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateX(5px);
+        }
+
+        .option.correct {
+            background: linear-gradient(90deg, #00eaff, #00b8d4);
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff;
+        }
+
+        .option.wrong {
+            background: linear-gradient(90deg, #ff5252, #d81b60);
+            color: #fff;
+            box-shadow: 0 0 15px #ff5252;
+        }
+
+        .lamp {
+            display: none;
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+            transition: transform 0.3s ease;
+        }
+
+        .lamp:hover {
+            transform: scale(1.2);
+        }
+
+        .explanation {
+            margin-top: 15px;
+            font-style: italic;
+            color: #f0f0f0;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            animation: slideIn 0.5s ease;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .nav-button {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            box-shadow: 0 0 10px #ffd700;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .nav-button:disabled {
+            background: #666;
+            color: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        button#submit {
+            display: block;
+            width: 250px;
+            margin: 20px auto;
+            padding: 15px;
+            background: linear-gradient(45deg, #00eaff, #00b8d4);
+            color: #1a1a2e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.3em;
+            box-shadow: 0 0 15px #00eaff;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        button#submit:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px #00eaff;
+        }
+
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.8em;
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 3</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (61-90) con opzioni mescolate casualmente
+        const questions = [
+            {
+                question: "Cosa sono le ghiandole endocrine?",
+                options: ["Ghiandole che riversano il loro secreto attraverso un condotto", "Ghiandole che non hanno dotti e riversano il loro secreto nel sangue", "Ghiandole che producono enzimi digestivi"],
+                correct: "Ghiandole che non hanno dotti e riversano il loro secreto nel sangue",
+                explanation: "Le ghiandole endocrine, come l’ipofisi, la tiroide e le surrenali, producono ormoni che vengono rilasciati direttamente nel flusso sanguigno, senza l’uso di dotti, influenzando organi e tessuti lontani. A differenza delle ghiandole esocrine (es. salivari), che utilizzano condotti, le ghiandole endocrine regolano funzioni come il metabolismo, la crescita e la risposta allo stress. Gli OSS devono conoscere il ruolo di queste ghiandole per comprendere le condizioni cliniche dei pazienti, come il diabete o l’ipertiroidismo, e segnalare sintomi correlati."
+            },
+            {
+                question: "Le ghiandole endocrine riversano nel sangue:",
+                options: ["Anticorpi", "Ormoni", "Enzimi"],
+                correct: "Ormoni",
+                explanation: "Le ghiandole endocrine secernono ormoni, molecole chimiche che agiscono come messaggeri per regolare processi fisiologici, come il metabolismo (es. insulina), la crescita (es. GH) e la risposta allo stress (es. cortisolo). Gli anticorpi sono prodotti dal sistema immunitario, e gli enzimi sono secreti principalmente dalle ghiandole esocrine o dalle cellule. Gli OSS devono monitorare i pazienti con squilibri ormonali, come l’iperglicemia, e collaborare con l’équipe medica."
+            },
+            {
+                question: "Quale ghiandola regola il metabolismo corporeo?",
+                options: ["Ipofisi", "Tiroide", "Surrenali"],
+                correct: "Tiroide",
+                explanation: "La tiroide, situata nel collo, produce ormoni tiroidei (T3 e T4) che regolano il metabolismo corporeo, influenzando il consumo di energia, la temperatura corporea e la crescita cellulare. L’ipofisi controlla altre ghiandole, e le surrenali gestiscono stress e elettroliti. Gli OSS devono riconoscere i segni di disfunzioni tiroidee (es. stanchezza, intolleranza al freddo) per segnalarli, specialmente in pazienti anziani."
+            },
+            {
+                question: "Cos’è il gozzo?",
+                options: ["Un’infiammazione delle paratiroidi", "Un aumento di volume della tiroide", "Un tumore delle ghiandole surrenali"],
+                correct: "Un aumento di volume della tiroide",
+                explanation: "Il gozzo è un ingrossamento visibile della ghiandola tiroidea, spesso dovuto a carenza di iodio, ipertiroidismo o ipotiroidismo. Non è un’infiammazione delle paratiroidi né un tumore surrenalico. Gli OSS devono osservare segni come rigonfiamenti al collo e segnalarli, supportando i pazienti con gozzo nelle attività quotidiane e monitorando eventuali complicanze respiratorie."
+            },
+            {
+                question: "Cos’è il diabete mellito?",
+                options: ["Una patologia infettiva del pancreas", "Una malattia autoimmune che colpisce il fegato", "Un’alterazione del metabolismo degli zuccheri"],
+                correct: "Un’alterazione del metabolismo degli zuccheri",
+                explanation: "Il diabete mellito è una malattia cronica caratterizzata da un’alterazione del metabolismo degli zuccheri, dovuta a una produzione insufficiente di insulina (tipo 1) o a una resistenza all’insulina (tipo 2). Non è un’infezione né una malattia primariamente epatica. Gli OSS devono monitorare la glicemia, assistere nella gestione della dieta e riconoscere segni di ipo/iperglicemia per garantire la sicurezza del paziente."
+            },
+            {
+                question: "Quale tra i seguenti è un segno tipico del diabete mellito?",
+                options: ["Ipotensione", "Polidipsia", "Bradicardia"],
+                correct: "Polidipsia",
+                explanation: "La polidipsia, ovvero una sete eccessiva, è un segno classico del diabete mellito, insieme a poliuria e polifagia, dovuta all’iperglicemia che causa disidratazione. L’ipotensione e la bradicardia non sono sintomi tipici. Gli OSS devono osservare questi segni nei pazienti diabetici e segnalarli, garantendo un’adeguata idratazione e assistenza."
+            },
+            {
+                question: "Cosa sono le paratiroidi?",
+                options: ["Ghiandole che regolano il metabolismo del calcio", "Ghiandole che producono insulina", "Ghiandole che controllano la pressione arteriosa"],
+                correct: "Ghiandole che regolano il metabolismo del calcio",
+                explanation: "Le paratiroidi, situate dietro la tiroide, secernono il paratormone (PTH), che regola i livelli di calcio e fosforo nel sangue, influenzando ossa, reni e intestino. Non producono insulina (pancreas) né controllano direttamente la pressione. Gli OSS devono conoscere questa funzione per monitorare pazienti con squilibri calcemici, come l’osteoporosi."
+            },
+            {
+                question: "Dove si trovano le ghiandole surrenali?",
+                options: ["Nel collo", "Sopra i reni", "Nel pancreas"],
+                correct: "Sopra i reni",
+                explanation: "Le ghiandole surrenali sono situate sopra i reni, nella regione retroperitoneale, e sono composte da una corteccia (che produce cortisolo e aldosterone) e una midollare (adrenalina). Non si trovano nel collo né nel pancreas. Gli OSS devono comprendere la loro posizione e funzione per assistere pazienti con condizioni come il morbo di Addison o la sindrome di Cushing."
+            },
+            {
+                question: "Quale funzione hanno le ghiandole surrenali?",
+                options: ["Produzione di enzimi digestivi", "Regolazione del metabolismo degli zuccheri e della risposta allo stress", "Produzione di anticorpi"],
+                correct: "Regolazione del metabolismo degli zuccheri e della risposta allo stress",
+                explanation: "Le ghiandole surrenali producono ormoni come il cortisolo (regola il metabolismo degli zuccheri e l’infiammazione), l’aldosterone (equilibrio idro-salino) e l’adrenalina (risposta allo stress). Non producono enzimi digestivi né anticorpi. Gli OSS devono monitorare i segni di squilibrio surrenalico, come stanchezza o ipertensione, e supportare i pazienti in terapia ormonale."
+            },
+            {
+                question: "Cos’è l’insulina?",
+                options: ["Un enzima digestivo", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "L’insulina è un ormone prodotto dalle cellule beta del pancreas, che regola il metabolismo del glucosio facilitandone l’ingresso nelle cellule. Non è un enzima né un anticorpo. Gli OSS devono conoscere il ruolo dell’insulina per assistere pazienti diabetici, monitorando la glicemia e supportando l’autogestione della terapia insulinica."
+            },
+            {
+                question: "Dove viene prodotta l’insulina?",
+                options: ["Nel fegato", "Nel pancreas", "Nella tiroide"],
+                correct: "Nel pancreas",
+                explanation: "L’insulina è prodotta dalle cellule beta delle isole di Langerhans nel pancreas, un organo chiave nella regolazione glicemica. Il fegato metabolizza il glucosio, e la tiroide regola il metabolismo generale. Gli OSS devono sapere dove viene prodotta l’insulina per comprendere le complicanze del diabete e assistere nella gestione dei pazienti."
+            },
+            {
+                question: "Quale funzione ha l’insulina?",
+                options: ["Regola la pressione arteriosa", "Facilita l’assorbimento del glucosio nelle cellule", "Stimola la produzione di anticorpi"],
+                correct: "Facilita l’assorbimento del glucosio nelle cellule",
+                explanation: "L’insulina permette al glucosio di entrare nelle cellule, riducendo i livelli di zucchero nel sangue e fornendo energia ai tessuti. Non regola la pressione né stimola gli anticorpi. Gli OSS devono monitorare i pazienti in terapia insulinica, riconoscendo segni di ipoglicemia (es. sudorazione, tremori) e intervenendo secondo protocollo."
+            },
+            {
+                question: "Cos’è il glucagon?",
+                options: ["Un ormone che aumenta la glicemia", "Un enzima digestivo", "Un anticorpo"],
+                correct: "Un ormone che aumenta la glicemia",
+                explanation: "Il glucagone, prodotto dalle cellule alfa del pancreas, è un ormone che aumenta la glicemia stimolando la glicogenolisi e la gluconeogenesi nel fegato, contrastando l’azione dell’insulina. Non è un enzima né un anticorpo. Gli OSS devono conoscere il glucagone per gestire emergenze ipoglicemiche, collaborando con l’infermiere per la sua somministrazione."
+            },
+            {
+                question: "Dove viene prodotto il glucagone?",
+                options: ["Nel fegato", "Nel pancreas", "Nella tiroide"],
+                correct: "Nel pancreas",
+                explanation: "Il glucagone è prodotto dalle cellule alfa delle isole di Langerhans nel pancreas, accanto alle cellule beta che producono insulina. Il fegato è il principale bersaglio del glucagone, ma non lo produce. Gli OSS devono comprendere questa funzione per assistere pazienti con squilibri glicemici e supportare l’équipe medica."
+            },
+            {
+                question: "Quale funzione ha il glucagone?",
+                options: ["Stimola la produzione di insulina", "Aumenta i livelli di glucosio nel sangue", "Regola la pressione arteriosa"],
+                correct: "Aumenta i livelli di glucosio nel sangue",
+                explanation: "Il glucagone aumenta la glicemia stimolando il rilascio di glucosio dal glicogeno epatico (glicogenolisi) e la produzione di glucosio da altre fonti (gluconeogenesi). Non stimola l’insulina né regola la pressione. Gli OSS devono riconoscere il ruolo del glucagone in situazioni di ipoglicemia, collaborando per la sua somministrazione in emergenza."
+            },
+            {
+                question: "Cos’è l’adrenalina?",
+                options: ["Un enzima digestivo", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "L’adrenalina (o epinefrina) è un ormone prodotto dalla midollare delle ghiandole surrenali, che attiva la risposta di “lotta o fuga” in situazioni di stress, aumentando frequenza cardiaca, pressione arteriosa e glicemia. Non è un enzima né un anticorpo. Gli OSS devono conoscere i suoi effetti per monitorare pazienti in situazioni di stress acuto o shock anafilattico."
+            },
+            {
+                question: "Dove viene prodotta l’adrenalina?",
+                options: ["Nel pancreas", "Nelle ghiandole surrenali", "Nel fegato"],
+                correct: "Nelle ghiandole surrenali",
+                explanation: "L’adrenalina è prodotta nella midollare delle ghiandole surrenali, sopra i reni, in risposta a stimoli stressanti. Il pancreas produce insulina e glucagone, e il fegato non sintetizza ormoni di questo tipo. Gli OSS devono sapere dove viene prodotta per comprendere le risposte fisiologiche dei pazienti in condizioni critiche."
+            },
+            {
+                question: "Quale funzione ha l’adrenalina?",
+                options: ["Regola il metabolismo del calcio", "Stimola la risposta allo stress", "Facilita la digestione"],
+                correct: "Stimola la risposta allo stress",
+                explanation: "L’adrenalina attiva la risposta allo stress, aumentando la frequenza cardiaca, la pressione arteriosa e la disponibilità di glucosio per i muscoli, preparando il corpo a situazioni di emergenza. Non regola il calcio né la digestione. Gli OSS devono monitorare i segni di iperattivazione adrenergica (es. tachicardia, ansia) e segnalarli all’infermiere."
+            },
+            {
+                question: "Cos’è il cortisolo?",
+                options: ["Un ormone", "Un enzima", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "Il cortisolo, prodotto dalla corteccia surrenalica, è un ormone glucocorticoidi che regola il metabolismo degli zuccheri, delle proteine e dei grassi, e modula la risposta infiammatoria e allo stress. Non è un enzima né un anticorpo. Gli OSS devono conoscere il cortisolo per assistere pazienti con condizioni come la sindrome di Cushing o l’insufficienza surrenalica."
+            },
+            {
+                question: "Dove viene prodotto il cortisolo?",
+                options: ["Nel pancreas", "Nelle ghiandole surrenali", "Nella tiroide"],
+                correct: "Nelle ghiandole surrenali",
+                explanation: "Il cortisolo è prodotto nella zona fascicolata della corteccia surrenalica, sotto il controllo dell’ACTH ipofisario. Il pancreas e la tiroide non sono coinvolti. Gli OSS devono comprendere questa origine per monitorare i sintomi di squilibrio cortisolemico, come stanchezza o edema, nei pazienti."
+            },
+            {
+                question: "Quale funzione ha il cortisolo?",
+                options: ["Regola il metabolismo degli zuccheri e la risposta infiammatoria", "Stimola la produzione di insulina", "Regola la pressione arteriosa"],
+                correct: "Regola il metabolismo degli zuccheri e la risposta infiammatoria",
+                explanation: "Il cortisolo regola il metabolismo degli zuccheri (aumentando la gluconeogenesi), modula la risposta infiammatoria e supporta l’adattamento allo stress. Non stimola l’insulina né regola direttamente la pressione, sebbene influisca indirettamente sugli elettroliti. Gli OSS devono osservare i segni di ipercortisolemia (es. ipertensione, obesità) e segnalarli."
+            },
+            {
+                question: "Cos’è l’aldosterone?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "L’aldosterone è un ormone mineralcorticoide prodotto dalla zona glomerulare della corteccia surrenalica, che regola l’equilibrio idro-salino trattenendo sodio e acqua nei reni. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per monitorare pazienti con ipertensione o edema legati a squilibri elettrolitici."
+            },
+            {
+                question: "Dove viene prodotto l’aldosterone?",
+                options: ["Nel pancreas", "Nelle ghiandole surrenali", "Nel fegato"],
+                correct: "Nelle ghiandole surrenali",
+                explanation: "L’aldosterone è prodotto nella zona glomerulare della corteccia surrenalica, sotto il controllo del sistema renina-angiotensina. Il pancreas e il fegato non sono coinvolti. Gli OSS devono sapere dove viene prodotto per comprendere le cause di edema o ipertensione nei pazienti."
+            },
+            {
+                question: "Quale funzione ha l’aldosterone?",
+                options: ["Regola l’equilibrio idro-salino", "Stimola la digestione", "Regola il metabolismo del calcio"],
+                correct: "Regola l’equilibrio idro-salino",
+                explanation: "L’aldosterone promuove il riassorbimento di sodio e l’escrezione di potassio nei reni, mantenendo l’equilibrio idro-salino e la pressione arteriosa. Non regola la digestione né il calcio. Gli OSS devono monitorare i segni di squilibrio (es. edema, ipokaliemia) e supportare i pazienti in terapia con diuretici."
+            },
+            {
+                question: "Cos’è il paratormone?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "Il paratormone (PTH), prodotto dalle paratiroidi, è un ormone che regola i livelli di calcio e fosforo nel sangue, promuovendo il riassorbimento osseo e l’assorbimento intestinale di calcio. Non è un enzima né un anticorpo. Gli OSS devono conoscere il PTH per assistere pazienti con iperparatiroidismo o ipocalcemia."
+            },
+            {
+                question: "Dove viene prodotto il paratormone?",
+                options: ["Nelle paratiroidi", "Nel pancreas", "Nella tiroide"],
+                correct: "Nelle paratiroidi",
+                explanation: "Il paratormone è prodotto dalle ghiandole paratiroidi, situate dietro la tiroide. Il pancreas e la tiroide non sono coinvolti. Gli OSS devono sapere dove viene prodotto per monitorare sintomi di squilibrio calcemico, come crampi o fragilità ossea."
+            },
+            {
+                question: "Quale funzione ha il paratormone?",
+                options: ["Regola il metabolismo degli zuccheri", "Regola i livelli di calcio nel sangue", "Stimola la risposta allo stress"],
+                correct: "Regola i livelli di calcio nel sangue",
+                explanation: "Il paratormone (PTH) aumenta i livelli di calcio nel sangue stimolando il riassorbimento osseo, l’assorbimento intestinale e il riassorbimento renale di calcio, mentre riduce i fosfati. Non regola gli zuccheri né lo stress. Gli OSS devono osservare segni di ipercalcemia (es. stanchezza, nausea) o ipocalcemia (es. tetania) nei pazienti."
+            },
+            {
+                question: "Cos’è la calcitonina?",
+                options: ["Un enzima", "Un ormone", "Un anticorpo"],
+                correct: "Un ormone",
+                explanation: "La calcitonina è un ormone prodotto dalle cellule C della tiroide, che riduce i livelli di calcio nel sangue inibendo il riassorbimento osseo e aumentando l’escrezione renale di calcio. Non è un enzima né un anticorpo. Gli OSS devono conoscere il suo ruolo per assistere pazienti con ipercalcemia o patologie ossee."
+            },
+            {
+                question: "Dove viene prodotta la calcitonina?",
+                options: ["Nel pancreas", "Nella tiroide", "Nelle surrenali"],
+                correct: "Nella tiroide",
+                explanation: "La calcitonina è prodotta dalle cellule parafollicolari (cellule C) della tiroide, non dal pancreas né dalle surrenali. Gli OSS devono sapere dove viene prodotta per comprendere il trattamento di condizioni come l’ipercalcemia o l’osteoporosi."
+            },
+            {
+                question: "Quale funzione ha la calcitonina?",
+                options: ["Regola il metabolismo degli zuccheri", "Riduce i livelli di calcio nel sangue", "Stimola la risposta allo stress"],
+                correct: "Riduce i livelli di calcio nel sangue",
+                explanation: "La calcitonina riduce i livelli di calcio nel sangue inibendo l’attività degli osteoclasti (riassorbimento osseo) e aumentando l’escrezione renale di calcio, contrastando l’azione del paratormone. Non regola gli zuccheri né lo stress. Gli OSS devono monitorare i pazienti con squilibri calcemici, segnalando sintomi come stanchezza o dolori ossei."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 1}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                // Aggiungi evento per accendere il quadratino
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0); // Mostra la prima domanda
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+
+            // Gestione stato pulsanti
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+
+            // Disabilita i radio button dopo l'invio
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+
+            document.getElementById("submit").addEventListener("click", checkAnswers);
+        };
+    </script>
+</body>
+</html>
